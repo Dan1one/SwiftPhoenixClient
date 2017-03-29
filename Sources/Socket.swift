@@ -174,7 +174,7 @@ public class Socket: WebSocketDelegate {
      - parameter error: NSError
      */
     func onError(error: NSError) {
-        if (debugMode) {print("Error: \(error)")}
+        if (self.debugMode) {print("Error: \(error)")}
         for chan in channels {
             let msg = Message(message: ["body": error.localizedDescription] as Any)
             chan.trigger(triggerEvent: "error", msg: msg)
@@ -226,7 +226,7 @@ public class Socket: WebSocketDelegate {
         let chan = Channel(topic: topic, message: message, callback: callback, socket: self)
         channels.append(chan)
         if isConnected() {
-            if (debugMode) {print("joining")}
+            if (self.debugMode) {print("joining")}
             rejoin(chan: chan)
         }
     }
@@ -259,7 +259,7 @@ public class Socket: WebSocketDelegate {
             (payload: Payload) -> Void in
             if let connection = self.conn {
                 let json = self.payloadToJson(payload: payload)
-                if (debugMode) {print("json: \(json)")}
+                if (self.debugMode) {print("json: \(json)")}
                 connection.write(string: json)
             }
         }
@@ -299,12 +299,12 @@ public class Socket: WebSocketDelegate {
     // WebSocket Delegate Methods
 
     public func websocketDidReceiveMessage(socket: WebSocket, text: String) {
-        if (debugMode) {print("socket message: \(text)")}
+        if (self.debugMode) {print("socket message: \(text)")}
 
         guard let data = text.data(using: String.Encoding.utf8),
             let json = try? JSONSerialization.jsonObject(with: data, options: []),
             let jsonObject = json as? [String: AnyObject] else {
-                if (debugMode) {print("Unable to parse JSON: \(text)")}
+                if (self.debugMode) {print("Unable to parse JSON: \(text)")}
                 return
         }
         
@@ -312,7 +312,7 @@ public class Socket: WebSocketDelegate {
 
         guard let topic = jsonObject["topic"] as? String, let event = jsonObject["event"] as? String,
             let msg = jsonObject["payload"] as? [String: AnyObject] else {
-                if (debugMode) {print("No phoenix message: \(text)")}
+                if (self.debugMode) {print("No phoenix message: \(text)")}
                 return
         }
 
@@ -321,17 +321,17 @@ public class Socket: WebSocketDelegate {
     }
 
     public func websocketDidReceiveData(socket: WebSocket, data: Data) {
-        if (debugMode) {print("got some data: \(data.count)")}
+        if (self.debugMode) {print("got some data: \(data.count)")}
     }
 
     public func websocketDidDisconnect(socket: WebSocket, error: NSError?) {
         if let err = error { onError(error: err) }
-        if (debugMode) {print("socket closed: \(error?.localizedDescription)")}
+        if (self.debugMode) {print("socket closed: \(error?.localizedDescription)")}
         onClose(event: "reason: \(error?.localizedDescription)")
     }
 
     public func websocketDidConnect(socket: WebSocket) {
-        if (debugMode) {print("socket opened")}
+        if (self.debugMode) {print("socket opened")}
         onOpen()
     }
 
