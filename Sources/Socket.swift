@@ -308,7 +308,7 @@ public class Socket: WebSocketDelegate {
                 return
         }
         
-        downstreamDataCount = downstreamDataCount + data.count
+        downstreamDataCount = downstreamDataCount + Int64(data.count)
 
         guard let topic = jsonObject["topic"] as? String, let event = jsonObject["event"] as? String,
             let msg = jsonObject["payload"] as? [String: AnyObject] else {
@@ -374,7 +374,7 @@ public class Socket: WebSocketDelegate {
                 return ""
         }
         
-        upstreamDataCount = upstreamDataCount + jsonData.count
+        upstreamDataCount = upstreamDataCount + Int64(jsonData.count)
         
         return jsonString
     }
